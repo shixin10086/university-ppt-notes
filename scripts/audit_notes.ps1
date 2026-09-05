@@ -4,7 +4,19 @@ param(
 
     [string]$SlideExtractPath,
 
-    [int]$ExpectedSlideCount = 0
+    [int]$ExpectedSlideCount = 0,
+
+    [int]$CoverMin = 150,
+    [int]$CoverMax = 200,
+    [int]$ContentsMin = 80,
+    [int]$ContentsMax = 120,
+    [int]$TransitionMin = 60,
+    [int]$TransitionMax = 90,
+    [int]$IntroMax = 60,
+    [int]$BodyMin = 60,
+    [int]$BodyMax = 185,
+    [int]$ClosingMin = 35,
+    [int]$ClosingMax = 45
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,6 +51,15 @@ function Add-Issue {
         kind = $Kind
         message = $Message
     })
+}
+
+function Get-TextLength {
+    param([string]$Text)
+
+    if ($null -eq $Text) {
+        return 0
+    }
+    return ([regex]::Replace($Text, '\s', '')).Length
 }
 
 $notes = Get-Content -Raw -LiteralPath $NotesPath
@@ -102,20 +123,23 @@ for ($index = 0; $index -lt $headingMatches.Count; $index++) {
     if ($labels -contains '开场') {
         $format = 'cover'
         $text = Get-LabeledBlock $section '开场'
-        if ($text.Length -lt 150 -or $text.Length -gt 200) {
-            Add-Issue $issues $page 'length' "开场为$($text.Length)字，应为150—200字。"
+        $textLength = Get-TextLength $text
+        if ($textLength -lt $CoverMin -or $textLength -gt $CoverMax) {
+            Add-Issue $issues $page 'length' "开场为${textLength}字，应为${CoverMin}—${CoverMax}字。"
         }
     } elseif ($labels -contains '讲授说明') {
         $format = 'contents'
         $text = Get-LabeledBlock $section '讲授说明'
-        if ($text.Length -lt 80 -or $text.Length -gt 120) {
-            Add-Issue $issues $page 'length' "讲授说明为$($text.Length)字，应为80—120字，目录内容较多时允许写到100字以上。"
+        $textLength = Get-TextLength $text
+        if ($textLength -lt $ContentsMin -or $textLength -gt $ContentsMax) {
+            Add-Issue $issues $page 'length' "讲授说明为${textLength}字，应为${ContentsMin}—${ContentsMax}字。"
         }
     } elseif ($labels -contains '过渡') {
         $format = 'transition'
         $text = Get-LabeledBlock $section '过渡'
-        if ($text.Length -lt 60 -or $text.Length -gt 90) {
-            Add-Issue $issues $page 'length' "过渡为$($text.Length)字，应为60—90字。"
+        $textLength = Get-TextLength $text
+        if ($textLength -lt $TransitionMin -or $textLength -gt $TransitionMax) {
+            Add-Issue $issues $page 'length' "过渡为${textLength}字，应为${TransitionMin}—${TransitionMax}字。"
         }
     } elseif (($labels -contains '问题描述') -or ($labels -contains '思考重点') -or ($labels -contains '参考回答')) {
         $format = 'thinking'
@@ -144,12 +168,13 @@ for ($index = 0; $index -lt $headingMatches.Count; $index++) {
         $intro = Get-LabeledBlock $section '引入'
         $body = Get-LabeledBlock $section '备稿'
         $closing = Get-LabeledBlock $section '收束'
-        $bodyLength = if ($null -eq $body) { $null } else { $body.Length }
+        $bodyLength = if ($null -eq $body) { $null } else { Get-TextLength $body }
 
         if ($null -ne $intro) {
+            $introLength = Get-TextLength $intro
             $sentenceCount = ([regex]::Matches($intro, '[。！？!?]')).Count
-            if ($intro.Length -gt 60) {
-                Add-Issue $issues $page 'length' "引入为$($intro.Length)字，超过60字。"
+            if ($introLength -gt $IntroMax) {
+                Add-Issue $issues $page 'length' "引入为${introLength}字，超过${IntroMax}字。"
             }
             if ($sentenceCount -ne 1) {
                 Add-Issue $issues $page 'sentence-count' "引入检测到$sentenceCount个句末标点，应为一句。"
@@ -157,17 +182,18 @@ for ($index = 0; $index -lt $headingMatches.Count; $index++) {
         }
 
         if ($null -ne $closing) {
+            $closingLength = Get-TextLength $closing
             $sentenceCount = ([regex]::Matches($closing, '[。！？!?]')).Count
-            if ($closing.Length -lt 35 -or $closing.Length -gt 45) {
-                Add-Issue $issues $page 'length' "收束为$($closing.Length)字，应为35—45字。"
+            if ($closingLength -lt $ClosingMin -or $closingLength -gt $ClosingMax) {
+                Add-Issue $issues $page 'length' "收束为${closingLength}字，应为${ClosingMin}—${ClosingMax}字。"
             }
             if ($sentenceCount -ne 1) {
                 Add-Issue $issues $page 'sentence-count' "收束检测到$sentenceCount个句末标点，应为一句。"
             }
         }
 
-        if ($null -ne $body -and ($body.Length -lt 60 -or $body.Length -gt 185)) {
-            Add-Issue $issues $page 'length' "备稿正文为$($body.Length)字，超出60—185字总范围。"
+        if ($null -ne $body -and ($bodyLength -lt $BodyMin -or $bodyLength -gt $BodyMax)) {
+            Add-Issue $issues $page 'length' "备稿正文为${bodyLength}字，超出${BodyMin}—${BodyMax}字总范围。"
         }
     } else {
         Add-Issue $issues $page 'format' '无法识别页面备稿格式。'

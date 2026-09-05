@@ -96,7 +96,7 @@ Skill默认采用“开头一次确认、每5页一批、先审后写”。它�
 
 例如：
 
-> 开始前请确认本次设置：整套PPT；普通页引入不超过60字、备稿按内容权重分级、收束35—45字；采用面向本科生的通用大学教师口吻；详略由PPT判断；最终可交付Markdown、Word和含备注PPT。回复“按默认即可”，或直接修改任一项。
+> 开始前会逐项列出字数计算方式、普通页引入上限、正文四档范围、收束范围、封面/目录/过渡页范围，以及思考页和视频页是否设限。你可以回复“全部按默认”，也可以只改某一项，例如“按模块计算，正文统一为100—130字，其他默认”。
 
 确认后，每一步都会用两三句话说明当前进度和下一步，例如：
 
@@ -165,6 +165,12 @@ Skill只读取PPT作为备稿内容来源，不主动查找或读取同目录中
 
 ```powershell
 ./scripts/audit_notes.ps1 -NotesPath ./tests/fixtures/export-sample.md -ExpectedSlideCount 5
+```
+
+用户采用自定义字数时，将相应范围传给审计脚本，例如：
+
+```powershell
+./scripts/audit_notes.ps1 -NotesPath ./notes.md -ExpectedSlideCount 40 -IntroMax 50 -BodyMin 100 -BodyMax 130 -ClosingMin 30 -ClosingMax 40
 ```
 
 如果已经通过其他工具生成 `slide_extract.json`，可以同时核对PPT标题：
