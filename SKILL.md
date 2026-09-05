@@ -1,6 +1,6 @@
 ---
 name: university-ppt-notes
-description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。适用于仅依据真实幻灯片内容，按批次生成引入、备稿、收束、章节过渡、课堂思考和视频提示，并进行教师试讲、Humanize、全稿审查、Word导出或PPT备注写入的任务。
+description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。组合使用ppt-speech-writer完成PPT视觉取证、humanize完成表达重写，再按本Skill进行五页审核、教师试讲、全稿检查、Word导出和PPT备注写入。
 ---
 
 # University PPT Notes
@@ -14,6 +14,9 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 1. [references/authoring-rules.md](references/authoring-rules.md)：格式、字数、口吻、图示、详略和页间逻辑。
 2. [references/quality-benchmarks.md](references/quality-benchmarks.md)：合格与不合格表达的判断尺度。
 3. [references/guided-workflow.md](references/guided-workflow.md)：分阶段引导、确认语义、进度展示和中断续作。
+4. [references/companion-skills.md](references/companion-skills.md)：`ppt-speech-writer` 与 `humanize` 的分工、调用顺序和冲突处理。
+
+首次撰写某种页面类型前，读取 [examples/page-type-examples.md](examples/page-type-examples.md) 中对应类型的一页，只校准格式、专业程度、讲述节奏和Humanize强度，不能复制其中的课程事实或措辞。
 
 全稿完成后再完整读取并执行 [references/final-audit.md](references/final-audit.md)。
 
@@ -26,6 +29,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 3. 尚未经过用户确认的草稿不得写入累计稿，也不得作为后续续写依据。
 4. 用户在当前对话中指定的简写页、重点页、术语或语言样稿，只对当前任务生效；不要另外搜索要求文件补充规则。
 5. 多批次任务默认启用引导模式，并用 `.university-ppt-notes/state.json` 记录工作流元数据。状态文件只记录PPT路径、页数、批次、确认进度、阶段和产物路径，不记录写作要求或课程内容。
+6. 普通备稿任务不得修改本Skill的规则、示例或脚本。只有用户明确要求维护或改进Skill时，才更新Skill文件。
 
 ## 三、读取PPT
 
@@ -34,7 +38,9 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 3. 建立页面清单，为每页标记：页面类型、教学任务、视觉类型、与前文重复程度、建议详略层级。
 4. 不把编号卡片、装饰箭头和普通排版误判为流程图；只有对象之间的方向、因果、循环、层级或空间关系承载知识时，才按图示讲解。
 
-若环境中已有 `ppt-speech-writer`，优先使用它完成PPT提取、渲染、视觉盘点和备注写入；若已有 `humanize`，把它用于初稿后的结果检查，而不是用它替代专业核对。
+本工作流需要组合使用 `ppt-speech-writer` 和 `humanize`。开始前检查两者是否可用；缺少时明确告诉用户并协助安装，不能悄悄降级后声称已经执行完整流程。两个伙伴Skill都不是本仓库的复制内容，也不会随本Skill自动安装。
+
+只使用 `ppt-speech-writer` 的PPT提取、OOXML检查、渲染、OCR、视觉盘点和最终备注写入能力；不采用它的语言确认、时长预算、叙事确认、暂停标记、过渡行或讲稿格式。初稿完成后必须使用 `humanize` 处理信息顺序、句式节奏和生硬衔接，再由本Skill的教师检查层验收。本Skill的专业准确、页面格式、字数、详略和用户确认规则始终优先。
 
 ## 四、建立教学主线
 
@@ -79,7 +85,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 4. 图示讲解是否必要且准确，详略是否符合知识新颖度和页面作用。
 5. 学生听完后能否说出本页的关键认识，而不只是知道PPT列了什么。
 
-先在聊天中完整展示当前批次。只有用户明确确认后，才一次性写入唯一累计稿；用户每确认一条可复用意见，都要更新写作规则或质量基准。
+先在聊天中完整展示当前批次。只有用户明确确认后，才一次性写入唯一累计稿。用户提出的新要求在当前任务中持续执行，但不得自动写入或改变已安装Skill。
 
 展示批次后必须同时给出简短的当前进度和下一步提示。根据当前阶段解释用户的“好的”“通过”“下一步”，不能脱离刚刚展示的内容推定授权；具体判断遵循引导工作流。
 

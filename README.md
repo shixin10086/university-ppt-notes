@@ -1,5 +1,7 @@
 # University PPT Notes
 
+[![validate](https://github.com/shixin10086/university-ppt-notes/actions/workflows/validate.yml/badge.svg)](https://github.com/shixin10086/university-ppt-notes/actions/workflows/validate.yml)
+
 一个面向中文大学课程PPT的 Codex Skill，用于从真实幻灯片生成可直接讲授的逐页备稿，并完成分批审阅、教师试讲、Humanize、全稿验收、Word导出和PPT备注写入。
 
 它重点解决的不是“把PPT扩写成文字”，而是让每一页都承担明确的教学任务：引入完整、解释准确、详略合理、页间连贯，并能以规范的大学教师口吻连续讲授。
@@ -31,6 +33,7 @@ university-ppt-notes/
 ├─ requirements.txt
 ├─ references/
 │  ├─ authoring-rules.md
+│  ├─ companion-skills.md
 │  ├─ final-audit.md
 │  ├─ guided-workflow.md
 │  └─ quality-benchmarks.md
@@ -40,11 +43,11 @@ university-ppt-notes/
 ├─ examples/
 │  └─ page-type-examples.md
 ├─ scripts/
-   ├─ audit_notes.ps1
-   ├─ build_notes_json.py
-   ├─ inject_notes.py
-   ├─ export_docx.py
-   ├─ workflow_state.py
+│  ├─ audit_notes.ps1
+│  ├─ build_notes_json.py
+│  ├─ inject_notes.py
+│  ├─ export_docx.py
+│  ├─ workflow_state.py
 │  └─ check_package.ps1
 └─ tests/
    ├─ fixtures/
@@ -56,23 +59,36 @@ university-ppt-notes/
 
 ## 安装
 
-将整个仓库复制或克隆到 Codex skills 目录：
+将整个仓库复制或克隆到 Codex skills 目录。下面的写法在 `CODEX_HOME` 未设置时会使用默认的 `.codex` 目录：
 
 ```powershell
-git clone <your-repository-url> "$env:CODEX_HOME\skills\university-ppt-notes"
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $codexRoot 'skills\university-ppt-notes')
 ```
 
 重新打开任务后，可以直接说：
 
 > 使用 university-ppt-notes，只读取目录中的PPT，为前5页生成逐页授课备稿，先在聊天中给我审核。
 
-如果需要使用导出脚本，安装Python依赖：
+## 伙伴Skill
+
+完整流程组合使用三个Skill，但职责不会混在一起：
+
+- `ppt-speech-writer`：只负责PPT提取、渲染、OCR、视觉盘点和最终备注写入
+- `university-ppt-notes`：负责教学主线、五页生成、详略、格式、教师检查和用户确认
+- `humanize`：负责初稿后的充分重写、句间衔接和去AI感
+
+本仓库不会复制或自动安装另外两个Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer` 和 `humanize` 已存在；缺少时，可以直接要求Codex搜索并安装对应Skill。详细的调用边界见 [伙伴Skill分工](references/companion-skills.md)。
+
+## Python依赖
+
+使用导出脚本前安装依赖：
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-核心撰写流程本身不依赖这些Python包；`python-docx`仅用于Word导出，`python-pptx`仅用于PPT备注写入。
+`python-docx`用于Word导出，`python-pptx`用于PPT备注写入。版本范围锁定在已经通过自动测试的主版本内，避免未来不兼容更新直接破坏流程。
 
 ## 用户会怎样被引导
 
@@ -200,7 +216,7 @@ python ./scripts/workflow_state.py show --state ./.university-ppt-notes/state.js
 - Skill校验工具返回有效
 - README中的安装与示例命令可执行
 - GitHub Actions中的Windows端到端测试通过
-- 仓库中不包含课程PPT、用户文档、完整最终讲稿或临时渲染文件；质量示例仅使用版权人明确授权的5页节选
+- 仓库中不包含课程PPT、用户文档、完整最终讲稿或临时渲染文件；质量示例仅使用版权人明确授权的12个单页节选
 - 根目录包含有效的MIT `LICENSE`
 
 ## 许可证

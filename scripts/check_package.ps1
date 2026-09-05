@@ -13,6 +13,7 @@ $required = @(
     'requirements.txt',
     'agents\openai.yaml',
     'references\authoring-rules.md',
+    'references\companion-skills.md',
     'references\final-audit.md',
     'references\guided-workflow.md',
     'references\quality-benchmarks.md',
@@ -40,6 +41,11 @@ $skill = Get-Content -Raw -LiteralPath (Join-Path $root 'SKILL.md')
 if ($skill -notmatch '(?s)^---\s*\r?\nname:\s*university-ppt-notes\s*\r?\ndescription:.+?\r?\n---') {
     throw 'SKILL.md frontmatter is invalid.'
 }
+foreach ($companion in @('ppt-speech-writer', 'humanize')) {
+    if ($skill -notmatch [regex]::Escape($companion)) {
+        throw "SKILL.md does not describe companion skill: $companion"
+    }
+}
 
 $license = Get-Content -Raw -LiteralPath (Join-Path $root 'LICENSE')
 if ($license -notmatch '^MIT License' -or $license -notmatch 'Copyright \(c\) 2026 余京泽') {
@@ -52,7 +58,14 @@ $auditJson = & (Join-Path $root 'scripts\audit_notes.ps1') `
 $audit = $auditJson | ConvertFrom-Json
 if ($audit.issue_count -ne 0) {
     $audit.issues | ConvertTo-Json -Depth 5 | Write-Output
-    throw 'Example notes failed audit.'
+    throw 'Export fixture failed audit.'
+}
+
+$example = Get-Content -Raw -LiteralPath (Join-Path $root 'examples\page-type-examples.md')
+$typeMatches = [regex]::Matches($example, '(?m)^## 类型[^：\r\n]*：')
+$sourcePageMatches = [regex]::Matches($example, '(?m)^### P\d+\s+')
+if ($typeMatches.Count -ne 12 -or $sourcePageMatches.Count -ne 12) {
+    throw 'Page-type example must contain exactly twelve labeled page types and twelve source pages.'
 }
 
 $pythonScripts = @(
@@ -87,7 +100,8 @@ try {
 [pscustomobject]@{
     package = 'university-ppt-notes'
     required_files = $required.Count
-    example_pages = 5
+    example_types = 12
+    fixture_pages = 5
     audit_issues = 0
     smoke_test = 'passed'
     status = 'passed'

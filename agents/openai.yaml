@@ -1,7 +1,7 @@
 interface:
   display_name: "大学PPT逐页备稿"
   short_description: "依据真实PPT分批生成并审校大学课程逐页授课备稿"
-  default_prompt: "使用 $university-ppt-notes 读取当前目录中的PPT，按引导流程生成逐页授课备稿。"
+  default_prompt: "使用 $university-ppt-notes，并按规定分工调用 ppt-speech-writer 与 humanize，读取当前目录中的PPT后按引导流程生成逐页授课备稿。"
 
 policy:
   allow_implicit_invocation: true
