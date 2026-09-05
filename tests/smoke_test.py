@@ -23,7 +23,7 @@ def normalize(text: str) -> str:
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
-    sample = root / "examples" / "sample-notes.md"
+    sample = root / "tests" / "fixtures" / "export-sample.md"
     with tempfile.TemporaryDirectory(prefix="university-ppt-notes-") as temp:
         temp_dir = Path(temp)
         source_pptx = temp_dir / "source.pptx"

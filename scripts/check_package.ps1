@@ -18,7 +18,8 @@ $required = @(
     'references\quality-benchmarks.md',
     'templates\notes-template.md',
     'templates\state-template.json',
-    'examples\sample-notes.md',
+    'examples\page-type-examples.md',
+    'tests\fixtures\export-sample.md',
     'scripts\audit_notes.ps1',
     'scripts\build_notes_json.py',
     'scripts\inject_notes.py',
@@ -46,7 +47,7 @@ if ($license -notmatch '^MIT License' -or $license -notmatch 'Copyright \(c\) 20
 }
 
 $auditJson = & (Join-Path $root 'scripts\audit_notes.ps1') `
-    -NotesPath (Join-Path $root 'examples\sample-notes.md') `
+    -NotesPath (Join-Path $root 'tests\fixtures\export-sample.md') `
     -ExpectedSlideCount 5
 $audit = $auditJson | ConvertFrom-Json
 if ($audit.issue_count -ne 0) {
@@ -71,7 +72,7 @@ if ($LASTEXITCODE -ne 0) { throw 'End-to-end smoke test failed.' }
 $tempJson = Join-Path ([IO.Path]::GetTempPath()) ("university-ppt-notes-" + [guid]::NewGuid().ToString('N') + '.json')
 try {
     & $PythonExecutable (Join-Path $root 'scripts\build_notes_json.py') `
-        --input (Join-Path $root 'examples\sample-notes.md') `
+        --input (Join-Path $root 'tests\fixtures\export-sample.md') `
         --output $tempJson | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Notes JSON generation failed.' }
     $notes = Get-Content -Raw -LiteralPath $tempJson | ConvertFrom-Json

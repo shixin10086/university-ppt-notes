@@ -38,7 +38,7 @@ university-ppt-notes/
 │  ├─ notes-template.md
 │  └─ state-template.json
 ├─ examples/
-│  └─ sample-notes.md
+│  └─ page-type-examples.md
 ├─ scripts/
    ├─ audit_notes.ps1
    ├─ build_notes_json.py
@@ -47,6 +47,8 @@ university-ppt-notes/
    ├─ workflow_state.py
 │  └─ check_package.ps1
 └─ tests/
+   ├─ fixtures/
+   │  └─ export-sample.md
    └─ smoke_test.py
 ```
 
@@ -121,6 +123,10 @@ Skill默认直接采用“每5页一批、先审后写”，不让用户在开�
 
 封面、目录、章节过渡、课堂思考和视频页使用不同模块，详见写作规则。
 
+## 质量示例
+
+[page-type-examples.md](examples/page-type-examples.md) 从经过逐页审核的真实课程成稿中，为每种主要页面类型各选一页，并经版权人授权公开。它覆盖固定格式以及需要不同讲法的普通内容页，是质量参照，不会作为其他课程的内容来源。导出脚本使用独立的测试夹具，避免把测试目的和质量展示混在一起。
+
 ## 输入边界
 
 Skill只读取PPT作为备稿内容来源，不主动查找或读取同目录中的Word、PDF、TXT等要求文件。用户在当前对话中直接提出的页码、详略或表达调整仍然有效，但不需要另建要求文档。
@@ -130,7 +136,7 @@ Skill只读取PPT作为备稿内容来源，不主动查找或读取同目录中
 检查Markdown结构和字数：
 
 ```powershell
-./scripts/audit_notes.ps1 -NotesPath ./examples/sample-notes.md -ExpectedSlideCount 5
+./scripts/audit_notes.ps1 -NotesPath ./tests/fixtures/export-sample.md -ExpectedSlideCount 5
 ```
 
 如果已经通过其他工具生成 `slide_extract.json`，可以同时核对PPT标题：
@@ -194,7 +200,7 @@ python ./scripts/workflow_state.py show --state ./.university-ppt-notes/state.js
 - Skill校验工具返回有效
 - README中的安装与示例命令可执行
 - GitHub Actions中的Windows端到端测试通过
-- 仓库中不包含课程PPT、用户文档、最终讲稿或临时渲染文件
+- 仓库中不包含课程PPT、用户文档、完整最终讲稿或临时渲染文件；质量示例仅使用版权人明确授权的5页节选
 - 根目录包含有效的MIT `LICENSE`
 
 ## 许可证
