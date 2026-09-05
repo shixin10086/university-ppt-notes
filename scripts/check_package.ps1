@@ -47,6 +47,16 @@ foreach ($companion in @('ppt-speech-writer', 'humanize')) {
     }
 }
 
+$guided = Get-Content -Raw -LiteralPath (Join-Path $root 'references\guided-workflow.md')
+foreach ($scope in @('单页要求', '当前批次要求', '本课程后续规则', 'Skill通用规则')) {
+    if ($guided -notmatch [regex]::Escape($scope)) {
+        throw "Guided workflow is missing feedback scope: $scope"
+    }
+}
+if ($guided -notmatch '状态文件仍不保存这些要求' -or $guided -notmatch '用户另开新任务后，不继承') {
+    throw 'Guided workflow does not protect course-specific feedback from state or cross-task leakage.'
+}
+
 $license = Get-Content -Raw -LiteralPath (Join-Path $root 'LICENSE')
 if ($license -notmatch '^MIT License' -or $license -notmatch 'Copyright \(c\) 2026 余京泽') {
     throw 'LICENSE is missing the expected MIT copyright notice.'
