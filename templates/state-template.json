@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "ppt_path": "course.pptx",
+  "slide_count": 1,
+  "target_start": 1,
+  "target_end": 1,
+  "batch_size": 5,
+  "confirmed_through": 0,
+  "current_batch": {"start": 1, "end": 1},
+  "stage": "ppt_confirmed",
+  "cumulative_notes_path": "",
+  "audit": {"status": "not_started", "issue_pages": []},
+  "outputs": [],
+  "updated_at": ""
+}

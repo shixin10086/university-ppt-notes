@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+
+# Generated deliverables and QA files
+*.pdf
+*-with-notes.pptx
+*_含授课备注.pptx
+*-notes.docx
+*_逐页授课备稿*.docx
+notes.json
+rendered_slides/
+rendered_pages/
+qa-output/
+.university-ppt-notes/
+
+# Local project material
+*.tmp
+~$*
