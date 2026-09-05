@@ -56,6 +56,11 @@ foreach ($scope in @('单页要求', '当前批次要求', '本课程后续规�
 if ($guided -notmatch '状态文件仍不保存这些要求' -or $guided -notmatch '用户另开新任务后，不继承') {
     throw 'Guided workflow does not protect course-specific feedback from state or cross-task leakage.'
 }
+foreach ($intakeRule in @('确认卡', '字数', '按默认即可', '最多出现一次')) {
+    if ($guided -notmatch [regex]::Escape($intakeRule)) {
+        throw "Guided workflow is missing startup confirmation rule: $intakeRule"
+    }
+}
 
 $license = Get-Content -Raw -LiteralPath (Join-Path $root 'LICENSE')
 if ($license -notmatch '^MIT License' -or $license -notmatch 'Copyright \(c\) 2026 余京泽') {
