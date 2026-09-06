@@ -74,7 +74,7 @@ foreach ($scope in @('单页要求', '当前批次要求', '本课程后续规�
 if ($guided -notmatch '状态文件仍不保存这些要求' -or $guided -notmatch '用户另开新任务后，不继承') {
     throw 'Guided workflow does not protect course-specific feedback from state or cross-task leakage.'
 }
-foreach ($intakeRule in @('确认卡', '按各模块分别计算', '简讲60—85字', '课堂思考页和视频页', '硬限制', '最多出现一次')) {
+foreach ($intakeRule in @('确认卡', '按各模块分别计算', '简讲90—100字', '知识新颖度', '重复扣分', '初始档位', '教学功能', '背景页', '小结页', '详略分配', '课堂思考页和视频页', '硬限制', '最多出现一次')) {
     if ($guided -notmatch [regex]::Escape($intakeRule)) {
         throw "Guided workflow is missing startup confirmation rule: $intakeRule"
     }
