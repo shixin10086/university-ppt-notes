@@ -1,6 +1,6 @@
 ---
 name: university-ppt-notes
-description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。组合使用ppt-speech-writer完成PPT视觉取证、humanize完成表达重写，再按本Skill进行五页审核、教师试讲、全稿检查、Word导出和PPT备注写入。
+description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。组合使用ppt-speech-writer完成PPT视觉取证、humanize去除AI式写作，再用teacher-oral-delivery转换为教师口述稿，最后进行五页审核、教师试讲、全稿检查、Word导出和PPT备注写入。
 ---
 
 # University PPT Notes
@@ -14,7 +14,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 1. [references/authoring-rules.md](references/authoring-rules.md)：格式、字数、口吻、图示、详略和页间逻辑。
 2. [references/quality-benchmarks.md](references/quality-benchmarks.md)：合格与不合格表达的判断尺度。
 3. [references/guided-workflow.md](references/guided-workflow.md)：分阶段引导、确认语义、进度展示和中断续作。
-4. [references/companion-skills.md](references/companion-skills.md)：`ppt-speech-writer` 与 `humanize` 的分工、调用顺序和冲突处理。
+4. [references/companion-skills.md](references/companion-skills.md)：`ppt-speech-writer`、`humanize` 与教师口述层的分工、调用顺序和冲突处理。
 
 首次撰写某种页面类型前，读取 [examples/page-type-examples.md](examples/page-type-examples.md) 中对应类型的一页，只校准格式、专业程度、讲述节奏和Humanize强度，不能复制其中的课程事实或措辞。
 
@@ -43,9 +43,9 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 3. 建立页面清单，为每页标记：页面类型、教学任务、视觉类型、与前文重复程度、建议详略层级。
 4. 不把编号卡片、装饰箭头和普通排版误判为流程图；只有对象之间的方向、因果、循环、层级或空间关系承载知识时，才按图示讲解。
 
-本工作流需要组合使用 `ppt-speech-writer` 和 `humanize`。开始前检查两者是否可用；缺少时明确告诉用户并协助安装，不能悄悄降级后声称已经执行完整流程。两个伙伴Skill都不是本仓库的复制内容，也不会随本Skill自动安装。
+本工作流需要组合使用 `ppt-speech-writer`、`humanize` 和本仓库附带的 `teacher-oral-delivery`。开始前检查三个层次是否可用；缺少时明确告诉用户并协助安装，不能悄悄降级后声称已经执行完整流程。教师口述层位于 [companion-skills/teacher-oral-delivery/SKILL.md](companion-skills/teacher-oral-delivery/SKILL.md)，执行相关步骤前必须完整读取。
 
-只使用 `ppt-speech-writer` 的PPT提取、OOXML检查、渲染、OCR、视觉盘点和最终备注写入能力；不采用它的语言确认、时长预算、叙事确认、暂停标记、过渡行或讲稿格式。全讲分析经用户确认后，必须使用 `humanize` 根据非文章式事实卡直接成文，并检测信息顺序、句式节奏和生硬衔接，再由本Skill的教师检查层验收。本Skill的专业准确、页面格式、字数、详略和用户确认规则始终优先。
+只使用 `ppt-speech-writer` 的PPT提取、OOXML检查、渲染、OCR、视觉盘点和最终备注写入能力；不采用它的语言确认、时长预算、叙事确认、暂停标记、过渡行或讲稿格式。全讲分析经用户确认后，必须使用 `humanize` 根据非文章式事实卡直接成文并去除AI式写作，再由 `teacher-oral-delivery` 在不改变内容的前提下完成教师口述转换，最后交给本Skill的教师检查层验收。本Skill的专业准确、页面格式、字数、详略和用户确认规则始终优先。
 
 ## 四、建立教学主线
 
@@ -70,7 +70,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 
 所有固定格式和字数以写作规则为准。
 
-## 六、Humanize与语义衔接
+## 六、Humanize与教师口述转换
 
 第一次成文必须直接达到结果导向的Humanize标准：
 
@@ -85,6 +85,10 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 
 用户已经确认的页面只做最小必要修改。两种模式、输入包、退回条件和完成标准遵循强Humanize协议。
 
+Humanize通过后，必须再执行 `teacher-oral-delivery`。默认采用“中度语言改动＋较强解释逻辑”：允许在段内按照学生听懂的顺序调整信息，但不得补充事实、改变重点、突破字数、跨模块重组或抢讲后文。已经确认的页面仍执行最小必要修改。
+
+口述感来自清楚的解释顺序和自然的句间关系，不来自口头禅。不得习惯性加入“大家注意”“我们可以看到”“对吧”“是不是”“其实”“那么”“我们来看一下”等填充表达，也不得增加无教学需要的设问、自问自答或PPT导航。某个词确实承担语义或页面任务时可以使用，不能机械禁词。
+
 ## 七、教师检查与用户确认
 
 每批生成后，以大学教师身份把5页连续讲一遍，检查：
@@ -94,6 +98,8 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 3. 相邻页的主题变化是否有依据，是否重复同一结论。
 4. 图示讲解是否必要且准确，详略是否符合知识新颖度和页面作用。
 5. 学生听完后能否说出本页的关键认识，而不只是知道PPT列了什么。
+6. 教师能否不临时改口地连续讲完，学生能否只听一遍就跟上知识关系。
+7. 口述感是否来自连贯解释，而不是口头禅、聊天语气或强行互动。
 
 先在聊天中完整展示当前批次。只有用户明确确认后，才一次性写入唯一累计稿。
 
@@ -116,6 +122,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 2. 教学合理性和详略安排。
 3. 全套连续试讲。
 4. Humanize终检。
+5. 教师口述终检。
 
 首次验收只列问题，不直接改写确认稿。用户确认问题清单后再集中返修，并复查修改页前后相邻页。
 
@@ -142,6 +149,6 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 
 1. 全部页面已经确认并写入唯一累计稿。
 2. 文档页码范围与实际页面一致，硬性检查为零问题。
-3. 教学检查、连续试讲和Humanize终检均已通过。
+3. 教学检查、连续试讲、Humanize终检和教师口述终检均已通过。
 4. 导出后的PPT备注与最终累计稿逐页一致，且未混入页码和标题。
 5. Word和PPT交付文件能够正常打开，并完成与风险相称的视觉检查。

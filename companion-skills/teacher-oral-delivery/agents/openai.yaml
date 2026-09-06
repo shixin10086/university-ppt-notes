@@ -1,0 +1,7 @@
+interface:
+  display_name: "大学教师口述转换"
+  short_description: "将中文大学讲稿转换为专业连贯的教师口述稿"
+  default_prompt: "使用 $teacher-oral-delivery，在不改变专业事实、教学重点、格式和字数的前提下，把这份讲稿转换成教师可以连续讲出口的版本，不要用口头禅、设问或聊天化措辞制造口语感。"
+
+policy:
+  allow_implicit_invocation: true

@@ -2,7 +2,7 @@
 
 [![validate](https://github.com/shixin10086/university-ppt-notes/actions/workflows/validate.yml/badge.svg)](https://github.com/shixin10086/university-ppt-notes/actions/workflows/validate.yml)
 
-一个面向中文大学课程PPT的 Codex Skill，用于从真实幻灯片生成可直接讲授的逐页备稿，并完成分批审阅、教师试讲、Humanize、全稿验收、Word导出和PPT备注写入。
+一个面向中文大学课程PPT的 Codex Skill，用于从真实幻灯片生成可直接讲授的逐页备稿，并完成分批审阅、Humanize、教师口述转换、试讲验收、Word导出和PPT备注写入。
 
 它重点解决的不是“把PPT扩写成文字”，而是让每一页都承担明确的教学任务：引入完整、解释准确、详略合理、页间连贯，并能以规范的大学教师口吻连续讲授。
 
@@ -32,6 +32,10 @@ university-ppt-notes/
 ├─ CONTRIBUTING.md
 ├─ LICENSE
 ├─ requirements.txt
+├─ companion-skills/
+│  └─ teacher-oral-delivery/
+│     ├─ SKILL.md
+│     └─ agents/openai.yaml
 ├─ references/
 │  ├─ authoring-rules.md
 │  ├─ companion-skills.md
@@ -77,13 +81,14 @@ git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $co
 
 ## 伙伴Skill
 
-完整流程组合使用三个Skill，但职责不会混在一起：
+完整流程组合使用四个层次，但职责不会混在一起：
 
 - `ppt-speech-writer`：只负责PPT提取、渲染、OCR、视觉盘点和最终备注写入
 - `university-ppt-notes`：负责全讲分析报告、教学主线、五页生成、详略、格式、教师检查和用户确认
 - `humanize`：负责根据非文章式事实卡直接成文、句间衔接和去AI感检测
+- `teacher-oral-delivery`：位于本仓库，负责把Humanize结果转换成专业、连贯、可以直接讲出口的教师口述稿
 
-本仓库不会复制或自动安装另外两个Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer` 和 `humanize` 已存在；缺少时，可以直接要求Codex搜索并安装对应Skill。详细的调用边界见 [伙伴Skill分工](references/companion-skills.md)。
+本仓库不会复制或自动安装 `ppt-speech-writer` 和 `humanize`。首次使用前，请在Codex的可用Skill列表中确认它们已经存在；缺少时，可以直接要求Codex搜索并安装。教师口述层随仓库提供，主Skill会在Humanize之后读取执行，也可以把 `companion-skills/teacher-oral-delivery` 单独复制到Codex skills目录进行独立调用。详细边界见 [伙伴Skill分工](references/companion-skills.md)。
 
 新稿不会采用“先写完整书面初稿，再让Humanize润色”的方式，而是执行专门的 [大学讲稿强Humanize协议](references/humanize-protocol.md)：先建立非文章式事实卡，再直接完成第一次课堂成文并用检测模式复查；已经确认的页面仍保持最小必要修改。
 
@@ -131,10 +136,11 @@ Skill默认采用“开头一次确认、每5页一批、先审后写”。它�
 4. 用户确认全讲分析后，用前5页、当前5页、后5页形成上下文窗口。
 5. 为当前5页建立非文章式事实卡，并直接生成课堂讲稿。
 6. 用Humanize检测事实卡序列化、模板表达、句间关系和相邻页结构重复；失败页重新生成。
-7. 以大学教师身份连续试讲当前5页。
-8. 在聊天中完整展示，用户确认后才写入累计稿。
-9. 全部完成后依次做硬性检查、教学检查、连续试讲和Humanize终检。
-10. 从同一累计稿生成Word和PPT备注版。
+7. 用教师口述层按照“中度语言改动＋较强解释逻辑”处理听觉顺序、朗读顺畅度和跨页承接，并删除无教学功能的口头禅、设问与聊天化措辞。
+8. 以大学教师身份连续试讲当前5页。
+9. 在聊天中完整展示，用户确认后才写入累计稿。
+10. 全部完成后依次做硬性检查、教学检查、连续试讲、Humanize终检和教师口述终检。
+11. 从同一累计稿生成Word和PPT备注版。
 
 详细规则见 [SKILL.md](SKILL.md)。
 
@@ -235,6 +241,7 @@ python ./scripts/workflow_state.py show --state ./.university-ppt-notes/state.js
 - 详略取决于知识是否新增，不取决于页面是否有流程
 - 后续案例突出特色，不重复完整讲述共性流程
 - Humanize按最终听感验收，不按“是否调用过”验收
+- 教师口述默认采用中度语言改动和较强解释逻辑，口述感来自听觉顺序与句间关系，不来自口头禅
 - 已确认内容最小修改，未确认新稿充分重写
 
 ## 发布前清单

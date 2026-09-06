@@ -14,7 +14,7 @@ param(
     [int]$TransitionMax = 90,
     [int]$IntroMax = 60,
     [int]$BodyMin = 60,
-    [int]$BodyMax = 185,
+    [int]$BodyMax = 195,
     [int]$ClosingMin = 35,
     [int]$ClosingMax = 45
 )
