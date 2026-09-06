@@ -75,7 +75,7 @@ git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $co
 
 > 使用 university-ppt-notes，只读取目录中的PPT。先渲染整套PPT并向我提交全讲内容、逻辑关系、视觉重点和详略规划，确认后再每5页生成逐页授课备稿。
 
-首次运行时，Skill会先显示伙伴Skill检查卡。请按提示确认 `ppt-speech-writer`、`humanize` 与 [`lecture-transcript-rewriter`](https://github.com/carbonlife-yang/lecture-transcript-rewriter) 已经安装；它们都是外部Skill，不会随着本仓库自动安装。
+首次运行时，Skill会先显示伙伴Skill检查卡。请按提示确认 `ppt-speech-writer` 与 `humanize` 已经安装；它们是外部Skill，不会随着本仓库自动安装。教师口述转换协议已经包含在总控Skill中，无须单独安装。
 
 ## 伙伴Skill
 
@@ -84,9 +84,9 @@ git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $co
 - `ppt-speech-writer`：只负责PPT提取、渲染、OCR、视觉盘点和最终备注写入
 - `university-ppt-notes`：负责全讲分析报告、教学主线、五页生成、详略、格式、教师检查和用户确认
 - `humanize`：负责根据非文章式事实卡直接成文、句间衔接和去AI感检测
-- `lecture-transcript-rewriter`：外部伙伴Skill，只使用其口述重写、风格适配和朗读自检能力，把Humanize结果转换成教师可以直接讲出口的版本
+- `university-ppt-notes` 内部教师可讲性重构协议：在Humanize之后按照“讲得准确、讲得顺畅、听得明白”三个目标完成必要重构和连续试讲
 
-本仓库不会复制或自动安装三个伙伴Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer`、`humanize` 与 `lecture-transcript-rewriter` 已经存在；缺少时，可以直接要求Codex安装对应Skill。详细边界见 [伙伴Skill分工](references/companion-skills.md)。
+本仓库不会复制或自动安装两个外部伙伴Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer` 与 `humanize` 已经存在；缺少时，可以直接要求Codex安装对应Skill。教师口述协议随总控Skill提供，详细边界见 [伙伴Skill分工](references/companion-skills.md)。
 
 新稿不会采用“先写完整书面初稿，再让Humanize润色”的方式，而是执行专门的 [大学讲稿强Humanize协议](references/humanize-protocol.md)：先建立非文章式事实卡，再直接完成第一次课堂成文并用检测模式复查；已经确认的页面仍保持最小必要修改。
 
@@ -102,7 +102,7 @@ python -m pip install -r requirements.txt
 
 ## 用户会怎样被引导
 
-Skill默认采用“先检查伙伴Skill、开头一次确认、每5页一批、先审后写”。依赖检查会明确提醒三个外部Skill是否已经安装；检查完成后，再把会随课程变化的关键参数和默认值放进一条确认卡：处理范围、字数尺度、授课对象或专业程度、已知的重点/简讲偏好，以及交付形式。用户可以回复“按默认即可”，也可以只修改其中一项。
+Skill默认采用“先检查伙伴Skill、开头一次确认、每5页一批、先审后写”。依赖检查会明确提醒两个外部Skill是否已经安装，并确认内部教师口述协议可用；检查完成后，再把会随课程变化的关键参数和默认值放进一条确认卡：处理范围、字数尺度、授课对象或专业程度、已知的重点/简讲偏好，以及交付形式。用户可以回复“按默认即可”，也可以只修改其中一项。
 
 例如：
 
@@ -134,7 +134,7 @@ Skill默认采用“先检查伙伴Skill、开头一次确认、每5页一批、
 4. 用户确认全讲分析后，用前5页、当前5页、后5页形成上下文窗口。
 5. 为当前5页建立非文章式事实卡，并直接生成课堂讲稿。
 6. 用Humanize检测事实卡序列化、模板表达、句间关系和相邻页结构重复；失败页重新生成。
-7. 调用 `lecture-transcript-rewriter`，按照“中度语言改动＋较强解释逻辑”处理听觉顺序、朗读顺畅度和跨页承接，并删除无教学功能的口头禅、设问与聊天化措辞。
+7. 执行内部教师可讲性重构协议，不预设修改强度；逐页处理听觉顺序、主体动作、句间关系和跨页承接，并删除无教学功能的口头禅、设问与聊天化措辞。
 8. 以大学教师身份连续试讲当前5页。
 9. 在聊天中完整展示，用户确认后才写入累计稿。
 10. 全部完成后依次做硬性检查、教学检查、连续试讲、Humanize终检和教师口述终检。
@@ -239,7 +239,7 @@ python ./scripts/workflow_state.py show --state ./.university-ppt-notes/state.js
 - 详略取决于知识是否新增，不取决于页面是否有流程
 - 后续案例突出特色，不重复完整讲述共性流程
 - Humanize按最终听感验收，不按“是否调用过”验收
-- 教师口述默认采用中度语言改动和较强解释逻辑，口述感来自听觉顺序与句间关系，不来自口头禅
+- 教师口述层不预设修改强度，以讲得准确、讲得顺畅、听得明白为验收目标，口述感来自听觉顺序与句间关系，不来自口头禅
 - 已确认内容最小修改，未确认新稿充分重写
 
 ## 发布前清单

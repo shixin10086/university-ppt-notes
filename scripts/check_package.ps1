@@ -18,6 +18,7 @@ $required = @(
     'references\final-audit.md',
     'references\guided-workflow.md',
     'references\humanize-protocol.md',
+    'references\teacher-oral-delivery.md',
     'references\quality-benchmarks.md',
     'templates\notes-template.md',
     'templates\deck-analysis-template.md',
@@ -45,14 +46,21 @@ $skill = Get-Content -Raw -LiteralPath (Join-Path $root 'SKILL.md')
 if ($skill -notmatch '(?s)^---\s*\r?\nname:\s*university-ppt-notes\s*\r?\ndescription:.+?\r?\n---') {
     throw 'SKILL.md frontmatter is invalid.'
 }
-foreach ($companion in @('ppt-speech-writer', 'humanize', 'lecture-transcript-rewriter')) {
+foreach ($companion in @('ppt-speech-writer', 'humanize')) {
     if ($skill -notmatch [regex]::Escape($companion)) {
         throw "SKILL.md does not describe companion skill: $companion"
     }
 }
-foreach ($dependencyReminder in @('伙伴Skill检查卡', '三个伙伴Skill都需要另行安装', '不随本仓库自动安装', '不能悄悄降级')) {
+foreach ($dependencyReminder in @('伙伴Skill检查卡', '两个伙伴Skill都需要另行安装', '教师口述协议属于本Skill内部流程', '不能悄悄降级')) {
     if ($skill -notmatch [regex]::Escape($dependencyReminder)) {
         throw "SKILL.md is missing dependency reminder: $dependencyReminder"
+    }
+}
+
+$oralProtocol = Get-Content -Raw -LiteralPath (Join-Path $root 'references\teacher-oral-delivery.md')
+foreach ($requiredRule in @('讲得准确', '讲得顺畅', '听得明白', '不预先分档', '只听一遍', '正常大学课堂语速连续试讲', '不能只替换近义词或补一个连接词')) {
+    if ($oralProtocol -notmatch [regex]::Escape($requiredRule)) {
+        throw "Teacher oral-delivery protocol is missing required rule: $requiredRule"
     }
 }
 

@@ -1,6 +1,6 @@
 ---
 name: university-ppt-notes
-description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。组合使用ppt-speech-writer完成PPT视觉取证、humanize去除AI式写作，再用lecture-transcript-rewriter转换为教师口述稿，最后进行五页审核、教师试讲、全稿检查、Word导出和PPT备注写入。
+description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课备稿。组合使用ppt-speech-writer完成PPT视觉取证、humanize完成表达重写，再按本Skill的教师口述协议进行转换、五页审核、教师试讲、全稿检查、Word导出和PPT备注写入。
 ---
 
 # University PPT Notes
@@ -14,19 +14,19 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 1. [references/authoring-rules.md](references/authoring-rules.md)：格式、字数、口吻、图示、详略和页间逻辑。
 2. [references/quality-benchmarks.md](references/quality-benchmarks.md)：合格与不合格表达的判断尺度。
 3. [references/guided-workflow.md](references/guided-workflow.md)：分阶段引导、确认语义、进度展示和中断续作。
-4. [references/companion-skills.md](references/companion-skills.md)：`ppt-speech-writer`、`humanize` 与 `lecture-transcript-rewriter` 的分工、调用顺序和冲突处理。
+4. [references/companion-skills.md](references/companion-skills.md)：`ppt-speech-writer` 与 `humanize` 的分工、调用顺序和冲突处理。
 
 首次撰写某种页面类型前，读取 [examples/page-type-examples.md](examples/page-type-examples.md) 中对应类型的一页，只校准格式、专业程度、讲述节奏和Humanize强度，不能复制其中的课程事实或措辞。
 
 全稿完成后再完整读取并执行 [references/final-audit.md](references/final-audit.md)。
 
-整套PPT取证完成后，完整读取并执行 [references/deck-analysis-report.md](references/deck-analysis-report.md)，先把全讲分析报告交给用户确认。准备生成当前批次时，完整读取并执行 [references/humanize-protocol.md](references/humanize-protocol.md)。
+整套PPT取证完成后，完整读取并执行 [references/deck-analysis-report.md](references/deck-analysis-report.md)，先把全讲分析报告交给用户确认。准备生成当前批次时，完整读取并执行 [references/humanize-protocol.md](references/humanize-protocol.md)；Humanize通过后，再完整读取并执行 [references/teacher-oral-delivery.md](references/teacher-oral-delivery.md)。
 
 备稿的材料来源只使用PPT。不要主动查找或读取同目录中的Word、PDF、TXT等要求文件，也不要把其他文档作为内容依据。用户在当前对话中直接提出的指令仍然有效。
 
 ## 二、确认唯一工作底稿
 
-1. 首次使用时先向用户显示伙伴Skill检查卡，逐项说明 `ppt-speech-writer`、`humanize` 和 `lecture-transcript-rewriter` 是否可用，以及缺失后会损失什么能力。三个伙伴Skill都需要另行安装，不随本仓库自动安装。缺失项必须提醒并征询是否安装，用户决定后再继续，不能悄悄降级。
+1. 首次使用时先向用户显示伙伴Skill检查卡，逐项说明 `ppt-speech-writer` 和 `humanize` 是否可用，以及缺失后会损失什么能力。两个伙伴Skill都需要另行安装，不随本仓库自动安装。教师口述协议属于本Skill内部流程，无须另行安装。缺失项必须提醒并征询是否安装，用户决定后再继续，不能悄悄降级。
 2. 确认PPT文件、处理页码和用户已经确认到哪一页。
 3. 开始生成前，用一条简短确认卡一次性核对当前任务中尚未明确、且无法从PPT可靠判断的关键参数：处理范围、字数尺度、授课对象或专业程度、已知的重点/简讲偏好，以及最终交付形式。每项都给出本Skill默认值，允许用户直接回复“按默认即可”；用户已经说明的内容不要重复询问。
 4. 字数不能只写“按内容权重分级”。确认卡要明确询问：限制按单个模块还是整页合计；普通页的引入上限、正文采用统一范围还是简讲/常规/重点/核心四档、收束范围；封面、目录和章节过渡页的范围；课堂思考页和视频页采用固定范围还是按任务灵活控制；字数统计口径及是否允许浮动。
@@ -44,9 +44,9 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 3. 建立页面清单，为每页标记：页面类型、教学任务、视觉类型、与前文重复程度、建议详略层级。
 4. 不把编号卡片、装饰箭头和普通排版误判为流程图；只有对象之间的方向、因果、循环、层级或空间关系承载知识时，才按图示讲解。
 
-本工作流需要组合使用三个外部伙伴Skill：`ppt-speech-writer`、`humanize` 和 `lecture-transcript-rewriter`。开始前检查三者是否可用；缺少时明确告诉用户并协助安装，不能悄悄降级后声称已经执行完整流程。执行相关步骤前必须完整读取对应Skill。
+本工作流需要组合使用两个外部伙伴Skill：`ppt-speech-writer` 和 `humanize`。开始前检查两者是否可用；缺少时明确告诉用户并协助安装，不能悄悄降级后声称已经执行完整流程。执行相关步骤前必须完整读取对应Skill。
 
-只使用 `ppt-speech-writer` 的PPT提取、OOXML检查、渲染、OCR、视觉盘点和最终备注写入能力；不采用它的语言确认、时长预算、叙事确认、暂停标记、过渡行或讲稿格式。全讲分析经用户确认后，必须使用 `humanize` 根据非文章式事实卡直接成文并去除AI式写作，再由 `lecture-transcript-rewriter` 在不改变内容的前提下完成教师口述转换，最后交给本Skill的教师检查层验收。本Skill的专业准确、页面格式、字数、详略和用户确认规则始终优先。
+只使用 `ppt-speech-writer` 的PPT提取、OOXML检查、渲染、OCR、视觉盘点和最终备注写入能力；不采用它的语言确认、时长预算、叙事确认、暂停标记、过渡行或讲稿格式。全讲分析经用户确认后，必须使用 `humanize` 根据非文章式事实卡直接成文并去除AI式写作，再按本Skill内部教师口述协议完成转换，最后交给教师检查层验收。本Skill的专业准确、页面格式、字数、详略和用户确认规则始终优先。
 
 ## 四、建立教学主线
 
@@ -63,7 +63,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 
 1. 先判断页面类型，再使用对应格式。
 2. 为每页建立非文章式事实卡，只记录PPT证据、本页教学目标、主体与动作、条件与结果、专业边界、前后页关系、详略和字数；事实卡不得写成可以直接沿句润色的完整段落。
-3. 直接根据事实卡第一次成文为规范课堂讲稿，不再先写一篇完整的书面专业初稿。
+3. 成文前回看质量基准中的全部已审核错误示例，把错误机制作为当前批次的生成约束；随后直接根据事实卡第一次成文为规范课堂讲稿，不再先写一篇完整的书面专业初稿。
 4. 备稿解释知识关系和判断依据，不按PPT版面逐项报读。
 5. 第一次出现的核心机制可以讲细；后续案例复用同一机制时，只承接理解所需内容，重点说明新增约束和案例特色。
 6. 真正的流程图、原理图和示意图要讲清关键关系；普通照片、装饰图和容易直接读懂的流程步骤原则上不展开。
@@ -86,9 +86,7 @@ description: 为现有中文大学课程PPT撰写、审阅和交付逐页授课�
 
 用户已经确认的页面只做最小必要修改。两种模式、输入包、退回条件和完成标准遵循强Humanize协议。
 
-Humanize通过后，必须再调用 `lecture-transcript-rewriter` 的口述重写、风格适配和朗读自检能力。默认采用“中度语言改动＋较强解释逻辑”：允许在段内按照学生听懂的顺序调整信息，但不得补充事实、改变重点、突破字数、跨模块重组或抢讲后文。已经确认的页面仍执行最小必要修改。
-
-不要执行 `lecture-transcript-rewriter` 中与本任务无关的邀请码、密钥、白名单、用量记录、用户日志或企业培训交互流程，也不要采用它建议的口头禅和频繁互动。只把已经完成Humanize的5页讲稿及必要上下文交给它做口述转换；本Skill的专业准确、格式、详略、字数、禁止设问和禁止空泛口头禅规则优先。
+Humanize通过后，必须再执行 [大学教师可讲性重构协议](references/teacher-oral-delivery.md)。这一层不按轻度、中度或重度预设修改幅度，而是逐页检查“讲得准确、讲得顺畅、听得明白”：已经满足时不改，未满足时重构解决问题所需的整句或整段。不得补充事实、改变重点、突破字数、跨模块重组或抢讲后文；已经确认的页面仍执行最小必要修改。
 
 口述感来自清楚的解释顺序和自然的句间关系，不来自口头禅。不得习惯性加入“大家注意”“我们可以看到”“对吧”“是不是”“其实”“那么”“我们来看一下”等填充表达，也不得增加无教学需要的设问、自问自答或PPT导航。某个词确实承担语义或页面任务时可以使用，不能机械禁词。
 
@@ -103,6 +101,7 @@ Humanize通过后，必须再调用 `lecture-transcript-rewriter` 的口述重�
 5. 学生听完后能否说出本页的关键认识，而不只是知道PPT列了什么。
 6. 教师能否不临时改口地连续讲完，学生能否只听一遍就跟上知识关系。
 7. 口述感是否来自连贯解释，而不是口头禅、聊天语气或强行互动。
+8. 逐项对照质量基准中的已审核错误示例，确认没有出现相同错误机制；不能仅凭没有复现原句就判定通过。
 
 先在聊天中完整展示当前批次。只有用户明确确认后，才一次性写入唯一累计稿。
 
@@ -126,6 +125,8 @@ Humanize通过后，必须再调用 `lecture-transcript-rewriter` 的口述重�
 3. 全套连续试讲。
 4. Humanize终检。
 5. 教师口述终检。
+
+第五步结束前，再用质量基准中的全部已审核错误示例扫描全稿，检查错误模式是否跨页面重复或迁移成近义表达。该检查是最终兜底，不能代替生成前预防和每批拦截。
 
 首次验收只列问题，不直接改写确认稿。用户确认问题清单后再集中返修，并复查修改页前后相邻页。
 
