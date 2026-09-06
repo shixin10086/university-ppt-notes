@@ -14,11 +14,14 @@ $required = @(
     'agents\openai.yaml',
     'references\authoring-rules.md',
     'references\companion-skills.md',
+    'references\deck-analysis-report.md',
     'references\final-audit.md',
     'references\guided-workflow.md',
     'references\humanize-protocol.md',
     'references\quality-benchmarks.md',
     'templates\notes-template.md',
+    'templates\deck-analysis-template.md',
+    'templates\fact-card-template.md',
     'templates\state-template.json',
     'examples\page-type-examples.md',
     'tests\fixtures\export-sample.md',
@@ -49,9 +52,16 @@ foreach ($companion in @('ppt-speech-writer', 'humanize')) {
 }
 
 $humanizeProtocol = Get-Content -Raw -LiteralPath (Join-Path $root 'references\humanize-protocol.md')
-foreach ($requiredRule in @('事实锁', '脱离原句', '检测模式', '用户确认稿：最小必要修改', '信息顺序和句式骨架基本未变')) {
+foreach ($requiredRule in @('非文章式事实卡', '直接成文', '检测模式', '用户确认稿：最小必要修改', '回到事实卡重新生成整页')) {
     if ($humanizeProtocol -notmatch [regex]::Escape($requiredRule)) {
         throw "Humanize protocol is missing required rule: $requiredRule"
+    }
+}
+
+$deckReport = Get-Content -Raw -LiteralPath (Join-Path $root 'references\deck-analysis-report.md')
+foreach ($requiredRule in @('取证覆盖', '章节与页面组结构', '全讲逻辑关系', '视觉内容清单', '详略规划', '用户确认前不得生成P01—P05')) {
+    if ($deckReport -notmatch [regex]::Escape($requiredRule)) {
+        throw "Deck analysis report is missing required rule: $requiredRule"
     }
 }
 
@@ -68,6 +78,9 @@ foreach ($intakeRule in @('确认卡', '按各模块分别计算', '简讲60—8
     if ($guided -notmatch [regex]::Escape($intakeRule)) {
         throw "Guided workflow is missing startup confirmation rule: $intakeRule"
     }
+}
+if ($guided -notmatch '全讲分析报告确认' -or $guided -notmatch '用户确认报告后') {
+    throw 'Guided workflow does not enforce deck-analysis approval before first-batch drafting.'
 }
 
 $license = Get-Content -Raw -LiteralPath (Join-Path $root 'LICENSE')

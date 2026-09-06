@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 STAGES = {
-    "ppt_confirmed", "deck_analyzed", "batch_drafting", "batch_review",
+    "ppt_confirmed", "deck_analyzed", "deck_review", "batch_drafting", "batch_review",
     "batch_written", "final_audit", "revision_review", "final_export", "complete",
 }
 AUDIT_STATUSES = {"not_started", "in_progress", "issues", "passed"}
