@@ -16,6 +16,7 @@ $required = @(
     'references\companion-skills.md',
     'references\final-audit.md',
     'references\guided-workflow.md',
+    'references\humanize-protocol.md',
     'references\quality-benchmarks.md',
     'templates\notes-template.md',
     'templates\state-template.json',
@@ -44,6 +45,13 @@ if ($skill -notmatch '(?s)^---\s*\r?\nname:\s*university-ppt-notes\s*\r?\ndescri
 foreach ($companion in @('ppt-speech-writer', 'humanize')) {
     if ($skill -notmatch [regex]::Escape($companion)) {
         throw "SKILL.md does not describe companion skill: $companion"
+    }
+}
+
+$humanizeProtocol = Get-Content -Raw -LiteralPath (Join-Path $root 'references\humanize-protocol.md')
+foreach ($requiredRule in @('事实锁', '脱离原句', '检测模式', '用户确认稿：最小必要修改', '信息顺序和句式骨架基本未变')) {
+    if ($humanizeProtocol -notmatch [regex]::Escape($requiredRule)) {
+        throw "Humanize protocol is missing required rule: $requiredRule"
     }
 }
 

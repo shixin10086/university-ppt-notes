@@ -80,6 +80,8 @@ git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $co
 
 本仓库不会复制或自动安装另外两个Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer` 和 `humanize` 已存在；缺少时，可以直接要求Codex搜索并安装对应Skill。详细的调用边界见 [伙伴Skill分工](references/companion-skills.md)。
 
+新稿不会直接采用通用 `humanize` 的“最小有效修改”，而是执行专门的 [大学讲稿强Humanize协议](references/humanize-protocol.md)：锁定事实后脱离原句重构，再用检测模式复查；已经确认的页面仍保持最小必要修改。
+
 ## Python依赖
 
 使用导出脚本前安装依赖：
