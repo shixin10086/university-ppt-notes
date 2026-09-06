@@ -12,8 +12,6 @@ $required = @(
     'LICENSE',
     'requirements.txt',
     'agents\openai.yaml',
-    'companion-skills\teacher-oral-delivery\SKILL.md',
-    'companion-skills\teacher-oral-delivery\agents\openai.yaml',
     'references\authoring-rules.md',
     'references\companion-skills.md',
     'references\deck-analysis-report.md',
@@ -47,18 +45,17 @@ $skill = Get-Content -Raw -LiteralPath (Join-Path $root 'SKILL.md')
 if ($skill -notmatch '(?s)^---\s*\r?\nname:\s*university-ppt-notes\s*\r?\ndescription:.+?\r?\n---') {
     throw 'SKILL.md frontmatter is invalid.'
 }
-foreach ($companion in @('ppt-speech-writer', 'humanize', 'teacher-oral-delivery')) {
+foreach ($companion in @('ppt-speech-writer', 'humanize', 'lecture-transcript-rewriter')) {
     if ($skill -notmatch [regex]::Escape($companion)) {
         throw "SKILL.md does not describe companion skill: $companion"
     }
 }
-
-$oralDelivery = Get-Content -Raw -LiteralPath (Join-Path $root 'companion-skills\teacher-oral-delivery\SKILL.md')
-foreach ($requiredRule in @('中度语言改动＋较强解释逻辑', '只听一遍', '禁止用口头禅制造课堂感', '不改变本页重点', '正常大学课堂语速连续朗读')) {
-    if ($oralDelivery -notmatch [regex]::Escape($requiredRule)) {
-        throw "Teacher oral-delivery skill is missing required rule: $requiredRule"
+foreach ($dependencyReminder in @('伙伴Skill检查卡', '三个伙伴Skill都需要另行安装', '不随本仓库自动安装', '不能悄悄降级')) {
+    if ($skill -notmatch [regex]::Escape($dependencyReminder)) {
+        throw "SKILL.md is missing dependency reminder: $dependencyReminder"
     }
 }
+
 
 $humanizeProtocol = Get-Content -Raw -LiteralPath (Join-Path $root 'references\humanize-protocol.md')
 foreach ($requiredRule in @('非文章式事实卡', '直接成文', '检测模式', '用户确认稿：最小必要修改', '回到事实卡重新生成整页')) {
