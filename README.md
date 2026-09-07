@@ -36,17 +36,22 @@ university-ppt-notes/
 │  ├─ authoring-rules.md
 │  ├─ companion-skills.md
 │  ├─ deck-analysis-report.md
+│  ├─ drafting-core.md
 │  ├─ final-audit.md
 │  ├─ guided-workflow.md
 │  ├─ humanize-protocol.md
 │  └─ quality-benchmarks.md
 ├─ templates/
 │  ├─ deck-analysis-template.md
-│  ├─ fact-card-template.md
 │  ├─ notes-template.md
 │  └─ state-template.json
 ├─ examples/
-│  └─ page-type-examples.md
+│  ├─ page-type-examples.md
+│  ├─ knowledge-concept.md
+│  ├─ diagram-principle.md
+│  ├─ case-scenario.md
+│  ├─ outline-transition.md
+│  └─ summary-page.md
 ├─ scripts/
 │  ├─ audit_notes.ps1
 │  ├─ build_notes_json.py
@@ -81,11 +86,11 @@ git clone https://github.com/shixin10086/university-ppt-notes.git (Join-Path $co
 
 - `ppt-speech-writer`：只负责PPT提取、渲染、OCR、视觉盘点和最终备注写入
 - `university-ppt-notes`：负责全讲分析报告、教学主线、五页生成、详略、格式、教师检查和用户确认
-- `humanize`：负责根据非文章式事实卡直接成文、句间衔接和去AI感检测
+- `humanize`：只负责检测机械表达、生硬衔接和不必要的AI式写法
 
 本仓库不会复制或自动安装另外两个Skill。首次使用前，请在Codex的可用Skill列表中确认 `ppt-speech-writer` 和 `humanize` 已存在；缺少时，可以直接要求Codex搜索并安装对应Skill。详细的调用边界见 [伙伴Skill分工](references/companion-skills.md)。
 
-新稿不会采用“先写完整书面初稿，再让Humanize润色”的方式，而是执行专门的 [大学讲稿强Humanize协议](references/humanize-protocol.md)：先建立非文章式事实卡，再直接完成第一次课堂成文并用检测模式复查；已经确认的页面仍保持最小必要修改。
+第一版讲稿由总Skill根据PPT事实、页面教学任务、前后页关系和对应优质样稿直接完成。随后按 [课堂成文与Humanize复核](references/humanize-protocol.md) 使用Humanize检测模式；只有发现明确问题时才由总Skill进行必要修改，不让Humanize接管整页写作。
 
 ## Python依赖
 
@@ -111,6 +116,8 @@ Skill默认采用“开头一次确认、每5页一批、先审后写”。它�
 
 > 进度：待审核P06—P10；已确认至P05，共91页。
 >
+> 建议复制Skill附在本批末尾的复核提示词，逐句检查当前5页的表达准确性、页面重点、图示讲解、内容重复、详略和教学连贯性；先列问题，不直接写入累计稿。
+>
 > 你可以回复“通过/下一步”，或直接说“修改P08：……”。
 
 在批次审核阶段，“下一步”表示接受刚刚展示的完整批次、写入累计稿并继续；如果用户提出修改，则先修改并重新展示，不会写入旧稿。全稿完成后，Skill会先列问题清单，得到许可后再集中返修。
@@ -129,8 +136,8 @@ Skill默认采用“开头一次确认、每5页一批、先审后写”。它�
 2. 提取并渲染整套幻灯片，建立覆盖每一页的页面清单。
 3. 向用户呈现全讲教学主线、页面组逻辑、视觉清单、详略规划和去重策略。
 4. 用户确认全讲分析后，用前5页、当前5页、后5页形成上下文窗口。
-5. 为当前5页建立非文章式事实卡，并直接生成课堂讲稿。
-6. 用Humanize检测事实卡序列化、模板表达、句间关系和相邻页结构重复；失败页重新生成。
+5. 当前批次逐页独立成文：每页只保留必要输入并读取一个对应样稿，写完后先放置，不沿用其结构生成下一页。
+6. 五页初稿全部完成后，再核验详细格式与字数，并用Humanize检测模板表达、生硬衔接和相邻页结构重复；局部问题最小修改，整体教学逻辑错误时才重新生成。
 7. 以大学教师身份连续试讲当前5页。
 8. 在聊天中完整展示，用户确认后才写入累计稿。
 9. 全部完成后依次做硬性检查、教学检查、连续试讲和Humanize终检。
@@ -162,7 +169,7 @@ Skill默认采用“开头一次确认、每5页一批、先审后写”。它�
 
 ## 质量示例
 
-[page-type-examples.md](examples/page-type-examples.md) 从经过逐页审核的真实课程成稿中，为每种主要页面类型各选一页，并经版权人授权公开。它覆盖固定格式以及需要不同讲法的普通内容页，是质量参照，不会作为其他课程的内容来源。导出脚本使用独立的测试夹具，避免把测试目的和质量展示混在一起。
+[page-type-examples.md](examples/page-type-examples.md) 是五类教学任务的简短索引，每类样稿单独存放。生成时只读取与当前页最接近的一个文件，借鉴知识展开方式而不复制课程事实或固定句式，避免多个示例同时进入上下文造成句式串扰。导出脚本使用独立测试夹具，避免把测试目的和质量展示混在一起。
 
 ## 输入边界
 
@@ -243,7 +250,7 @@ python ./scripts/workflow_state.py show --state ./.university-ppt-notes/state.js
 - Skill校验工具返回有效
 - README中的安装与示例命令可执行
 - GitHub Actions中的Windows端到端测试通过
-- 仓库中不包含课程PPT、用户文档、完整最终讲稿或临时渲染文件；质量示例仅使用版权人明确授权的12个单页节选
+- 仓库中不包含课程PPT、用户文档、完整最终讲稿或临时渲染文件；质量示例仅使用版权人明确授权的5个单页节选
 - 根目录包含有效的MIT `LICENSE`
 
 ## 许可证

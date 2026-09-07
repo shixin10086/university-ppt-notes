@@ -15,15 +15,20 @@ $required = @(
     'references\authoring-rules.md',
     'references\companion-skills.md',
     'references\deck-analysis-report.md',
+    'references\drafting-core.md',
     'references\final-audit.md',
     'references\guided-workflow.md',
     'references\humanize-protocol.md',
     'references\quality-benchmarks.md',
     'templates\notes-template.md',
     'templates\deck-analysis-template.md',
-    'templates\fact-card-template.md',
     'templates\state-template.json',
     'examples\page-type-examples.md',
+    'examples\knowledge-concept.md',
+    'examples\diagram-principle.md',
+    'examples\case-scenario.md',
+    'examples\outline-transition.md',
+    'examples\summary-page.md',
     'tests\fixtures\export-sample.md',
     'scripts\audit_notes.ps1',
     'scripts\build_notes_json.py',
@@ -52,7 +57,7 @@ foreach ($companion in @('ppt-speech-writer', 'humanize')) {
 }
 
 $humanizeProtocol = Get-Content -Raw -LiteralPath (Join-Path $root 'references\humanize-protocol.md')
-foreach ($requiredRule in @('非文章式事实卡', '直接成文', '检测模式', '用户确认稿：最小必要修改', '回到事实卡重新生成整页')) {
+foreach ($requiredRule in @('页面教学任务', '直接生成', 'Humanize只做检测', '最小必要修改', '没有问题就保留')) {
     if ($humanizeProtocol -notmatch [regex]::Escape($requiredRule)) {
         throw "Humanize protocol is missing required rule: $requiredRule"
     }
@@ -97,11 +102,29 @@ if ($audit.issue_count -ne 0) {
     throw 'Export fixture failed audit.'
 }
 
-$example = Get-Content -Raw -LiteralPath (Join-Path $root 'examples\page-type-examples.md')
-$typeMatches = [regex]::Matches($example, '(?m)^## 类型[^：\r\n]*：')
-$sourcePageMatches = [regex]::Matches($example, '(?m)^### P\d+\s+')
-if ($typeMatches.Count -ne 12 -or $sourcePageMatches.Count -ne 12) {
-    throw 'Page-type example must contain exactly twelve labeled page types and twelve source pages.'
+$exampleFiles = @(
+    'examples\knowledge-concept.md',
+    'examples\diagram-principle.md',
+    'examples\case-scenario.md',
+    'examples\outline-transition.md',
+    'examples\summary-page.md'
+)
+foreach ($exampleFile in $exampleFiles) {
+    $example = Get-Content -Raw -LiteralPath (Join-Path $root $exampleFile)
+    $sourcePageMatches = [regex]::Matches($example, '(?m)^## P\d+\s+')
+    if ($sourcePageMatches.Count -ne 1) {
+        throw "Each teaching-task example must contain exactly one source page: $exampleFile"
+    }
+}
+if ($skill -notmatch '当前5页全部完成独立初稿后' -or $skill -notmatch '只读取一个对应的独立样稿文件') {
+    throw 'SKILL.md does not preserve isolated page drafting before batch review.'
+}
+
+$draftingCore = Get-Content -Raw -LiteralPath (Join-Path $root 'references\drafting-core.md')
+foreach ($requiredRule in @('每次只生成当前批次中的一页', '一句话核心教学认识', '唯一一个最接近的独立样稿', '五页全部完成后')) {
+    if ($draftingCore -notmatch [regex]::Escape($requiredRule)) {
+        throw "Drafting core is missing isolation rule: $requiredRule"
+    }
 }
 
 $pythonScripts = @(
@@ -136,7 +159,7 @@ try {
 [pscustomobject]@{
     package = 'university-ppt-notes'
     required_files = $required.Count
-    example_types = 12
+    example_types = $exampleFiles.Count
     fixture_pages = 5
     audit_issues = 0
     smoke_test = 'passed'
